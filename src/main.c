@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/06/27 14:30:14 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/06/28 16:41:07 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -16,18 +16,31 @@ void	leaks()
 	system("leaks aoeu");
 }
 
+void	ft_error_log(char *str)
+{
+	write(2, "ERROR_", 6);
+	write(2, str, ft_strlen(str));
+	write(2, "\n", 1);
+	exit(-1);
+}
+
 void	ft_put_pixel(t_img *img, int x, int y, int color)
 {
 	char	*dst;
 
 	if (x >= 0 && y >= 0 && x < img->width && y < img->height)
+	{
 		dst = img->data_addr + ((y * img->line_size) + \
 		((x * (img->bits_per_pixel / 8))));
-	*(unsigned int*)dst = color;
+		*(unsigned int*)dst = color;
+	}
 }
 
-t_img	*ft_init_img(t_img *img, void *mlx, int width, int height)
+t_img	*ft_init_img(t_fdf *fdf,t_img *img, int width, int height)
 {	
+	void	*mlx;
+
+	mlx = fdf->mlx;
 	img->img = mlx_new_image(mlx, width, height);
 	img->data_addr = mlx_get_data_addr(img->img, &(img->bits_per_pixel), \
 	&(img->line_size), &(img->endian));
@@ -100,6 +113,7 @@ int	ft_make_transparency(int color1, int color2, double tr)
 	int	g;
 	int	b;
 
+	t = 0;
 	t = ft_lineal_mix(ft_get_color(color1, "T"), \
 	ft_get_color(color2, "T"), tr);
 	r = ft_lineal_mix(ft_get_color(color1, "R"), \
@@ -111,11 +125,10 @@ int	ft_make_transparency(int color1, int color2, double tr)
 	return (t << 24 | r << 16| g << 8 | b);
 }
 
-void	ft_make_display(t_img *ui, t_img *bg, t_img *dp)
+void	ft_put_display(t_fdf *fdf)
 {
-	ui = NULL;
-	bg = NULL;
-	dp = NULL;
+	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->background.img, 0, 0);
+	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->ui.img, 4, 5);
 	return ;
 }
 
@@ -123,32 +136,31 @@ t_img	*ft_open_img(t_fdf *fdf, t_img *img, char *path)
 {
 	img->img = mlx_xpm_file_to_image(&fdf->mlx, path, &img->width, &img->height);
 	if (!img->img)
-	{
-		write(2, "IMG_ERROR\n", 10);
-		exit(0);
-	}
+		ft_error_log("IMG_OPEN");
 	return (img);
 }
 
-int	main()
+int	ft_get_pixel_img(t_img *img, int x, int y)
+{
+	int color;
+
+	color = (*(unsigned int *)((img->data_addr + (y * img->line_size) + (x * img->bits_per_pixel / 8))));
+	return (color);
+}
+
+int	main(int argc, char **argv)
 {
 	t_fdf	*fdf;
-	t_img	*bg;
-	t_img	*ui;
-	int		y;
+	int		fd;
 
-	y = 0;
 	fdf = NULL;
-	atexit(leaks);
-	fdf = malloc(sizeof(t_fdf));
-	fdf->mlx = mlx_init();
-	fdf->win = mlx_new_window(fdf->mlx, 1920, 1080, "FDF");
-	bg = ft_init_img(&fdf->background, fdf->mlx, 1920, 1080);
-	ui = ft_open_img(fdf, &fdf->ui, "./src/img/test.xpm");
-	ft_fill_img(bg, 0x00FFFFFF);
-	//mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->display->img, 0, 0);
-	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->background.img, 0, 0);
-	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->ui.img, 50, 0);
-	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->ui.img, 0, 0);
-	mlx_loop(fdf->mlx);
+	if (argc == 2)
+	{
+		if (!((fd = open(argv[1], O_RDONLY) >= 0)))
+			ft_error_log("FD_OPEN");
+		ft_put_display(fdf);
+		mlx_loop(fdf->mlx);
+	}
+	ft_printf("usage: ./fdf 'map.fdf'\n");
+	exit(0);
 }
