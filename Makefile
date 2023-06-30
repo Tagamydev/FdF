@@ -6,7 +6,7 @@
 #    By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/24 19:28:25 by samusanc          #+#    #+#              #
-#    Updated: 2023/06/27 17:37:52 by samusanc         ###   ########.fr        #
+#    Updated: 2023/06/30 20:10:32 by samusanc         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ MLX		= -L /usr/local/lib -lmlx -lm -framework OpenGL -framework AppKit
 MAIN	= src/main.c
 OUT		= aoeu
 
-all:
+all: $(MAIN)
 	make -sC ./libft/
 	gcc $(CFLAGS) $(MAIN) $(MLX) -o $(OUT)
 .PHONY: all
