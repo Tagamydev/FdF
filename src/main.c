@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/01 19:32:28 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/01 21:55:24 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -149,11 +149,57 @@ int	ft_free_split(char **split)
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-void	ft_draw_line(t_point *a, t_point *b, t_fdf *fdf)
+int	ft_abs(int x)
 {
-	ft_put_pixel(&fdf->map_display, a->x, a->y, 0x00FF0000);
-	ft_put_pixel(&fdf->map_display, b->x, b->y, 0x000000FF);
+	if (x < 0)
+		return (-x);
+	return (x);
+}
+
+void	ft_bresen_init(t_bresen *z, t_point a, t_point b)
+{
+	z->dx = ft_abs(b.x - a.x);
+	z->dy = -ft_abs(b.y - a.y);
+	if (a.x < b.x)
+		z->sx = 1;
+	else
+		z->sx = -1;
+	if (a.y < b.y)
+		z->sy = 1;
+	else
+		z->sy = 1;
+	z->error = z->dx + z->dy;
+}
+
+void	ft_draw_line(t_point a, t_point b, t_fdf *fdf)
+{
+	t_bresen *z;
+
+	z = malloc(sizeof(t_bresen));
+	if (!z)
+		ft_error_log("KOMENASAE_ONICHAN");
+	ft_bresen_init(z, a, b);
+	while (1)
+	{
+		ft_put_pixel(&fdf->map_display, a.x, a.y, 0x00FF0000);
+		if (a.x == b.x && a.y == b.y)
+			break ;
+		z->e2 = z->error * 2;
+		if (z->e2 >= z->dy)
+		{
+			if (a.x == b.x)
+				break ;
+			z->error += z->dy;
+			a.x += z->sx;
+		}
+		if (z->e2 <= z->dx)
+		{
+			if (a.y == b.y)
+				break ;
+			z->error += z->dx;
+			a.y += z->sy;
+		}
+	}
 }
 
 void	ft_draw(t_map *map, t_fdf *fdf)
@@ -179,11 +225,11 @@ void	ft_draw(t_map *map, t_fdf *fdf)
 	t_point	a;
 	t_point	b;
 
-	a.x = 500;
+	a.x = 200;
 	a.y = 200;
 	b.x = 600;
 	b.y = 300;
-	ft_draw_line(&a, &b, fdf);
+	ft_draw_line(a, b, fdf);
 	ft_put_display(fdf);
 	map = NULL;
 }

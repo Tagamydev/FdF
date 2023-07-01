@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:14:03 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/01 18:43:28 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/01 21:55:28 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FDF_H
@@ -24,6 +24,15 @@ typedef enum e_projection{
 	ISO,
 	PARALLEL
 }		t_projection;
+
+typedef struct s_bresen{
+	int	dx;
+	int sx;
+	int dy;
+	int sy;
+	int error;
+	int	e2;
+}				t_bresen;
 
 typedef struct s_point{
 	int	x;
