@@ -6,7 +6,7 @@
 #    By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/24 19:28:25 by samusanc          #+#    #+#              #
-#    Updated: 2023/07/01 10:27:47 by samusanc         ###   ########.fr        #
+#    Updated: 2023/07/01 15:13:21 by samusanc         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,12 @@ CC		= gcc $(CFLAGS)
 MLX		= -L /usr/local/lib -lmlx -lm -framework OpenGL -framework AppKit
 LIBFT	= -L./libft/ -lft
 MAIN	= src/main.c
-SRCS	= $(MAIN)
+SRCS	= $(MAIN) \
+		  utils/map_parse/ft_read_map.c \
+		  utils/map_parse/ft_read_map_utils.c \
+		  utils/map_parse/ft_stack_to_arrays.c \
+		  utils/inits/ft_inits.c
+
 O_DIR	= ./objects/
 OBJS	= $(addprefix $(O_DIR)/, $(SRCS:.c=.o))
 
