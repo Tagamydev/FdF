@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/06/30 21:54:49 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/01 10:06:39 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -244,7 +244,7 @@ int	ft_atoi_base(char *number, int base)
 	while (*number >= '0' && *number <= '9')
 		result = result * base + ft_is_digit_base(*(number++), 10, BASE_UP);
 	if (*number && *number != '\n')
-		ft_error_log("INVALID_MAP_ATOI");
+		ft_error_log("INVALID_MAP");
 	return (sing * result);
 }
 
@@ -303,7 +303,7 @@ int	ft_read_map(int	fd, t_coord_val **coords_stack,t_map *map)
 
 	line = get_next_line(fd);
 	if (!line)
-		ft_error_log("GET_NEXT_LINE");
+		ft_error_log("GET_NETX_LINE");
 	while (line)
 	{
 		coords_line = ft_split(line, ' ');
@@ -337,6 +337,9 @@ t_map	*ft_init_map()
 	return (map);
 }
 
+//				hay que hacer una funcion para poner el titulo del mapa en la ventana
+//				y comprobar que tenga el formato .fdf
+
 int	main(int argc, char **argv)
 {
 	t_fdf	*fdf;
@@ -346,7 +349,7 @@ int	main(int argc, char **argv)
 
 	fdf = NULL;
 	coords_stack = NULL;
-	atexit(leaks);
+	//atexit(leaks);
 	if (argc == 2)
 	{
 		fd = open(argv[1], O_RDONLY);

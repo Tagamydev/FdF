@@ -6,16 +6,22 @@
 #    By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/24 19:28:25 by samusanc          #+#    #+#              #
-#    Updated: 2023/06/30 20:10:32 by samusanc         ###   ########.fr        #
+#    Updated: 2023/07/01 10:12:17 by samusanc         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-CFLAGS	= -Wall -Wextra -Werror -I ./includes -I ./libft/ -I /usr/local/include -L./libft/ -lft 
+NAME	= aoeu
+CFLAGS	= -Wall -Wextra -Werror -I ./includes -I ./libft/ -I /usr/local/include
+CC		= gcc $(CFLAGS)
 MLX		= -L /usr/local/lib -lmlx -lm -framework OpenGL -framework AppKit
+LIBFT	= -L./libft/ -lft
 MAIN	= src/main.c
-OUT		= aoeu
+OBJS	= $(SRCS:.c=.o)
 
-all: $(MAIN)
+all: $(NAME)
+
+$(NAME): $(OBJS)
 	make -sC ./libft/
-	gcc $(CFLAGS) $(MAIN) $(MLX) -o $(OUT)
+	$(CC) $(OBJS) $(MLX) $(LIBFT) -o $(OUT)
+
 .PHONY: all
