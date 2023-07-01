@@ -6,7 +6,7 @@
 #    By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/24 19:28:25 by samusanc          #+#    #+#              #
-#    Updated: 2023/07/01 10:22:20 by samusanc         ###   ########.fr        #
+#    Updated: 2023/07/01 10:27:47 by samusanc         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,15 +21,21 @@ O_DIR	= ./objects/
 OBJS	= $(addprefix $(O_DIR)/, $(SRCS:.c=.o))
 
 $(O_DIR)/%.o: %.c
-	mkdir -p $(@D)
-	$(CC) -c $< -o $(O_DIR)/$(<:.c=.o)
+	@mkdir -p $(@D)
+	@$(CC) -c $< -o $(O_DIR)/$(<:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	make -sC ./libft/
-	$(CC) $(OBJS) $(MLX) $(LIBFT) -o $(NAME)
+	@make -sC ./libft/
+	@$(CC) $(OBJS) $(MLX) $(LIBFT) -o $(NAME)
 
-fclean:
-	rm -f $(OBJS)
+fclean: clean
+	@make -sC ./libft/ fclean
+	@rm -f $(NAME)
+
+clean:
+	@make -sC ./libft/ clean
+	@rm -f $(OBJS)
+
 .PHONY: all
