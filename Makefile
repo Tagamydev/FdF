@@ -6,7 +6,7 @@
 #    By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/24 19:28:25 by samusanc          #+#    #+#              #
-#    Updated: 2023/07/01 10:12:17 by samusanc         ###   ########.fr        #
+#    Updated: 2023/07/01 10:22:20 by samusanc         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,12 +16,20 @@ CC		= gcc $(CFLAGS)
 MLX		= -L /usr/local/lib -lmlx -lm -framework OpenGL -framework AppKit
 LIBFT	= -L./libft/ -lft
 MAIN	= src/main.c
-OBJS	= $(SRCS:.c=.o)
+SRCS	= $(MAIN)
+O_DIR	= ./objects/
+OBJS	= $(addprefix $(O_DIR)/, $(SRCS:.c=.o))
+
+$(O_DIR)/%.o: %.c
+	mkdir -p $(@D)
+	$(CC) -c $< -o $(O_DIR)/$(<:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
 	make -sC ./libft/
-	$(CC) $(OBJS) $(MLX) $(LIBFT) -o $(OUT)
+	$(CC) $(OBJS) $(MLX) $(LIBFT) -o $(NAME)
 
+fclean:
+	rm -f $(OBJS)
 .PHONY: all

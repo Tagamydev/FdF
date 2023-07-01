@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/01 10:06:39 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/01 10:18:48 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -349,7 +349,7 @@ int	main(int argc, char **argv)
 
 	fdf = NULL;
 	coords_stack = NULL;
-	//atexit(leaks);
+	atexit(leaks);
 	if (argc == 2)
 	{
 		fd = open(argv[1], O_RDONLY);
