@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/01 13:46:09 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/01 17:38:15 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/04 15:45:36 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -52,7 +52,7 @@ t_camera	*ft_init_camera(t_fdf *fdf)
 	camera->alpha = 0;
 	camera->beta = 0;
 	camera->gamma = 0;
-	camera->z_divisor = 0;
+	camera->z_divisor = 1;
 	camera->x_offset = 0;
 	camera->y_offset = 0;
 	return (camera);

@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:14:03 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/01 21:55:28 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/04 17:23:50 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FDF_H
@@ -25,18 +25,11 @@ typedef enum e_projection{
 	PARALLEL
 }		t_projection;
 
-typedef struct s_bresen{
-	int	dx;
-	int sx;
-	int dy;
-	int sy;
-	int error;
-	int	e2;
-}				t_bresen;
-
 typedef struct s_point{
 	int	x;
 	int	y;
+	int	z;
+	int	color;
 }				t_point;
 
 typedef struct s_map{
@@ -108,7 +101,7 @@ void		ft_fill_img(t_img *img, int color);
 t_img		*ft_init_img(t_fdf *fdf, t_img *img, int width, int height);
 int			ft_get_color(int color, char *str);
 int			ft_lineal_mix(int c1, int c2, double mix);
-int			ft_make_transparency(int color1, int color2, double tr);
+int			ft_mix_color(int color1, int color2, double tr);
 void		ft_put_display(t_fdf *fdf);
 t_img		*ft_open_img(t_fdf *fdf, t_img *img, char *path);
 //	Parse map funtions

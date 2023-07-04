@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/01 21:55:24 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/04 17:52:33 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -88,7 +88,7 @@ int	ft_lineal_mix(int c1, int c2, double mix)
 	return (c1 * (1 - mix) + c2 * mix);
 }
 
-int	ft_make_transparency(int color1, int color2, double tr)
+int	ft_mix_color(int color1, int color2, double tr)
 {
 	int	t;
 	int	r;
@@ -156,55 +156,133 @@ int	ft_abs(int x)
 	return (x);
 }
 
-void	ft_bresen_init(t_bresen *z, t_point a, t_point b)
+void	ft_init_bresen(t_point *delta, t_point \
+*sign, t_point f, t_point s)
 {
-	z->dx = ft_abs(b.x - a.x);
-	z->dy = -ft_abs(b.y - a.y);
-	if (a.x < b.x)
-		z->sx = 1;
+	delta->x = ft_abs(s.x - f.x);
+	delta->y = ft_abs(s.y - f.y);
+	if (f.x < s.x)
+		sign->x = 1;
 	else
-		z->sx = -1;
-	if (a.y < b.y)
-		z->sy = 1;
+		sign->x = -1;
+	if (f.y < s.y)
+		sign->y = 1;
 	else
-		z->sy = 1;
-	z->error = z->dx + z->dy;
+		sign->y = -1;
 }
 
-void	ft_draw_line(t_point a, t_point b, t_fdf *fdf)
+int	ft_make_translucid(int color1)
 {
-	t_bresen *z;
+	int	t;
+	int	r;
+	int	g;
+	int	b;
 
-	z = malloc(sizeof(t_bresen));
-	if (!z)
-		ft_error_log("KOMENASAE_ONICHAN");
-	ft_bresen_init(z, a, b);
-	while (1)
+	t = 255;
+	r = ft_get_color(color1, "R");
+	g = ft_get_color(color1, "G");
+	b = ft_get_color(color1, "B");
+	return (t << 24 | r << 16| g << 8 | b);
+}
+
+double	ft_distance_2_points(t_point a, t_point b)
+{
+	double	x;
+	double	y;
+
+	x = pow((b.x - a.x), 2);
+	y = pow((b.y - a.y), 2);
+	return (sqrt(x + y));
+}
+
+int	ft_color_degradade(t_point init, t_point end, t_point current)
+{
+	double	total_distance;
+	double	actual_distance;
+	double	result;
+	
+	total_distance = ft_distance_2_points(init, end);
+	actual_distance = ft_distance_2_points(init, current);
+	result = actual_distance / total_distance;
+	return (ft_mix_color(init.color, end.color, result));
+}
+
+void	ft_draw_line(t_point f, t_point s, t_fdf *fdf)
+{
+	t_point	delta;
+	t_point	sign;
+	t_point	cur;
+	int		error;
+
+	ft_init_bresen(&delta, &sign, f, s);
+	error = delta.x - delta.y;
+	cur = f;
+	while (cur.x != s.x || cur.y != s.y)
 	{
-		ft_put_pixel(&fdf->map_display, a.x, a.y, 0x00FF0000);
-		if (a.x == b.x && a.y == b.y)
-			break ;
-		z->e2 = z->error * 2;
-		if (z->e2 >= z->dy)
+		ft_put_pixel(&fdf->map_display, cur.x, cur.y, ft_color_degradade(f, s, cur));
+		if ((error * 2) > -delta.y)
 		{
-			if (a.x == b.x)
-				break ;
-			z->error += z->dy;
-			a.x += z->sx;
+			error -= delta.y;
+			cur.x += sign.x;
 		}
-		if (z->e2 <= z->dx)
+		if ((error * 2) < delta.x)
 		{
-			if (a.y == b.y)
-				break ;
-			z->error += z->dx;
-			a.y += z->sy;
+			error += delta.x;
+			cur.y += sign.y;
 		}
 	}
 }
 
+void	rotate_x(int *y, int *z, double alpha)
+{
+	int tmp_y;
+	int tmp_z;
+	
+	tmp_y = *y;
+	tmp_z = *z;
+	*y = tmp_y * cos(alpha) + tmp_z * sin(alpha);
+	*z = tmp_y * sin(alpha) + tmp_z * cos(alpha);
+}
+
+void	iso(int *x, int *y, int z)
+{
+	int	tmp_x;
+	int	tmp_y;
+
+	tmp_x = *x;
+	tmp_y = *y;
+	*x = (tmp_x - tmp_y) * cos(0.523599);
+	*x = -z + (tmp_x + tmp_y) * sin(0.523599);
+}
+
+t_point	au(t_point point, t_fdf *fdf)
+{
+	point.x *= fdf->camera->zoom;
+	point.y *= fdf->camera->zoom;
+	point.x -= (fdf->camera->zoom * fdf->map->width) / 2;
+	point.y -= (fdf->camera->zoom * fdf->map->height) / 2;
+	//rotate_x(&point.y, &point.z, fdf->camera->alpha);
+	//iso(&point.x, &point.y, point.z);
+	point.x += 1000;
+	point.y += 500;
+	return (point);
+}
+
+t_point	ft_point(int x, int y, t_map *map)
+{
+	t_point	point;
+
+	point.x = x;
+	point.y = y;
+	point.color = 0x00FF0000;
+	point.z = map->coords_arr[x * y * map->width];
+	if (map->colors_arr[y * map->width + x] != -1)
+			point.color = map->colors_arr[x * y * map->width];
+	return (point);
+}
+
 void	ft_draw(t_map *map, t_fdf *fdf)
 {
-	/*
 	int	x;
 	int	y;
 
@@ -216,22 +294,30 @@ void	ft_draw(t_map *map, t_fdf *fdf)
 		while (x < map->width)
 		{
 			if (x != (map->width - 1))
-				ft_put_line();
+				ft_draw_line(au(ft_point(x, y, map), fdf), au(ft_point(x + 1, y, map), fdf), fdf);
 			if (y != (map->height - 1))
-				ft_put_line();
+				ft_draw_line(au(ft_point(x, y, map), fdf), au(ft_point(x, y + 1, map), fdf), fdf);
+			x++;
 		}
+		y++;
 	}
-	*/
-	t_point	a;
-	t_point	b;
-
-	a.x = 200;
-	a.y = 200;
-	b.x = 600;
-	b.y = 300;
-	ft_draw_line(a, b, fdf);
 	ft_put_display(fdf);
-	map = NULL;
+}
+
+
+void	ft_print_map(t_map *map)
+{
+	int i;
+	int j;
+
+	i = map->width * map->height;
+	j = 0;
+	while (j++ < i)
+	{
+		ft_printf("%d, %d	", map->coords_arr[j], map->colors_arr[j]);
+		if (j % 19 == 0)
+			ft_printf("\n");
+	}
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -257,6 +343,7 @@ int	main(int argc, char **argv)
 		ft_stack_to_arrays(&coords_stack, map);
 		fdf->camera = ft_init_camera(fdf);
 		ft_draw(fdf->map, fdf);
+		ft_print_map(map);
 		printf("Alles gut\n");
 		mlx_loop(fdf->mlx);
 	}
