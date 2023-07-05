@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/04 17:52:33 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/05 17:41:47 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -213,6 +213,9 @@ void	ft_draw_line(t_point f, t_point s, t_fdf *fdf)
 	t_point	sign;
 	t_point	cur;
 	int		error;
+	int		i;
+
+	i = 0;
 
 	ft_init_bresen(&delta, &sign, f, s);
 	error = delta.x - delta.y;
@@ -251,20 +254,28 @@ void	iso(int *x, int *y, int z)
 
 	tmp_x = *x;
 	tmp_y = *y;
-	*x = (tmp_x - tmp_y) * cos(0.523599);
-	*x = -z + (tmp_x + tmp_y) * sin(0.523599);
+	//*x = (tmp_x - tmp_y) * cos(0.523599);
+	//*x = -z + (tmp_x + tmp_y) * sin(0.523599);
+	z = 0;
 }
 
 t_point	au(t_point point, t_fdf *fdf)
 {
-	point.x *= fdf->camera->zoom;
-	point.y *= fdf->camera->zoom;
-	point.x -= (fdf->camera->zoom * fdf->map->width) / 2;
-	point.y -= (fdf->camera->zoom * fdf->map->height) / 2;
-	//rotate_x(&point.y, &point.z, fdf->camera->alpha);
-	//iso(&point.x, &point.y, point.z);
-	point.x += 1000;
-	point.y += 500;
+	int zoom = 100;
+	int x;
+	int y;
+
+	point.x *= zoom;
+	point.y *= zoom;
+	point.x -= (fdf->map->width * zoom) / 2;
+	point.x -= (fdf->map->height * zoom) / 2;
+	x = point.x;
+	y = point.y;
+	//point.x = (x - y) * cos(0.523599);
+	//point.y = (x + y) * sin(0.523599);
+	point.x += WIDTH / 2;
+	point.y += HEIGHT + fdf->map->height / 2;
+	fdf = NULL;
 	return (point);
 }
 
@@ -274,7 +285,7 @@ t_point	ft_point(int x, int y, t_map *map)
 
 	point.x = x;
 	point.y = y;
-	point.color = 0x00FF0000;
+	point.color = 0x00000000;
 	point.z = map->coords_arr[x * y * map->width];
 	if (map->colors_arr[y * map->width + x] != -1)
 			point.color = map->colors_arr[x * y * map->width];
@@ -337,14 +348,21 @@ int	main(int argc, char **argv)
 		fd = open(argv[1], O_RDONLY);
 		if (fd == -1)
 			ft_error_log("FD_OPEN");
+		printf("Alles gut IN OPEN\n");
 		map = ft_init_map();
+		printf("Alles gut in INIT MAP\n");
 		ft_read_map(fd, &coords_stack, map);
+		printf("Alles gut in READ MAP\n");
 		fdf = fdf_init(map, argv[1]);
+		printf("Alles gut in FDF INIT\n");
 		ft_stack_to_arrays(&coords_stack, map);
+		printf("Alles gut in STACK to ARRAYS\n");
 		fdf->camera = ft_init_camera(fdf);
+		printf("Alles gut in INIT CAMERA\n");
 		ft_draw(fdf->map, fdf);
+		printf("Alles gut in DRAW\n");
 		ft_print_map(map);
-		printf("Alles gut\n");
+		printf("Alles gut int PRINT MAP\n");
 		mlx_loop(fdf->mlx);
 	}
 	ft_printf("usage: ./fdf 'map.fdf'\n");
