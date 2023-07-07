@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:14:03 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/07 19:32:33 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/07 21:39:09 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FDF_H
@@ -104,7 +104,11 @@ typedef struct s_height{
 }				t_height;
 
 typedef struct s_fdf{
+	void		*mlx;
+	void		*win;
 	t_height	*map;
+	t_img		map_display;
+	t_camera	*camera;
 	t_height	*grid;
 }				t_fdfc;
 //---------------------------------------------------------------------------------------------------------
@@ -136,6 +140,7 @@ char **coords_line, t_map *map);
 int			ft_read_map(int fd, t_coord_val **coords_stack, t_map *map);
 void		ft_stack_to_arrays(t_coord_val **coords_stack, t_map *map);
 //	Inits
+char		*ft_map_format(char *str);
 t_map		*ft_init_map(void);
 t_camera	*ft_init_camera(t_fdf *fdf);
 void		ft_render_init(t_fdf *fdf);

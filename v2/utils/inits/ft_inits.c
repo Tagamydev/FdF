@@ -6,12 +6,12 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/01 13:46:09 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/05 17:50:41 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/07 21:39:12 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
 
-static char	*ft_map_format(char *str)
+char	*ft_map_format(char *str)
 {
 	char	**sp_dir;
 	char	**sp_format;

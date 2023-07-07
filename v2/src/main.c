@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/07 19:32:28 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/07 21:39:14 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -315,7 +315,6 @@ void	ft_draw(t_map *map, t_fdf *fdf)
 	ft_put_display(fdf);
 }
 
-
 void	ft_print_map(t_map *map)
 {
 	int i;
@@ -488,6 +487,23 @@ void	ft_print_mapi(t_height *map)
 	}
 }
 
+void	ft_free_line_map(t_width *map)
+{
+	t_width	*tmp;
+	t_width	*tmp2;
+
+	if (!map)
+		return ;
+	tmp = map;
+	tmp2 = tmp->next;
+	while (tmp2)
+	{
+		free(tmp);
+		tmp = tmp2;
+		tmp2 = tmp->next;
+	}
+	free(tmp);
+}
 
 void	ft_free_map(t_height *map)
 {
@@ -500,24 +516,133 @@ void	ft_free_map(t_height *map)
 	tmp2 = tmp->next;
 	while (tmp2)
 	{
-		ft_free_line_map(tmp);
+		ft_free_line_map(tmp->line);
 		free(tmp);
 		tmp = tmp2;
 		tmp2 = tmp->next;
 	}
+	ft_free_line_map(tmp->line);
 	free(tmp);
 }
+
+int	ft_get_col(t_height *map, int x, int y)
+{
+	t_height	*tmp1;
+	t_width		*tmp2;
+	int	i;
+	int	j;
+
+	i = 0;
+	tmp1 = map;
+	tmp2 = tmp1->line;
+	while (tmp1)
+	{
+		if (i++ == y)
+		{
+			j = 0;
+			tmp2 = tmp1->line;
+			while (tmp2)
+			{
+				if (j++ == x)
+					break ;
+				tmp2 = tmp2->next;
+			}
+			break ;
+		}
+		tmp1 = tmp1->next;
+	}
+	return (tmp2->color);
+}
+
+int	ft_get_z(t_height *map, int x, int y)
+{
+	t_height	*tmp1;
+	t_width		*tmp2;
+	int	i;
+	int	j;
+
+	i = 0;
+	tmp1 = map;
+	tmp2 = tmp1->line;
+	while (tmp1)
+	{
+		if (i++ == y)
+		{
+			j = 0;
+			tmp2 = tmp1->line;
+			while (tmp2)
+			{
+				if (j++ == x)
+					break ;
+				tmp2 = tmp2->next;
+			}
+			break ;
+		}
+		tmp1 = tmp1->next;
+	}
+	return (tmp2->z);
+}
+
+
+t_point	*ft_get_point(t_height *map, int x, int y)
+{
+	t_point	*point;
+
+	point = malloc(sizeof(t_point));
+	if (!point)
+		ft_error_log("MALLOC_POINT");
+	point->z = ft_get_z(map, x, y);
+	point->color = ft_get_col(map, x, y);
+	point->x = x;
+	point->y = y;
+	return (point);
+}
+
+void	*ft_init_camera()
+{
+}
+
+void	*ft_init_fdf(t_fdfc *fdf)
+{
+	t_fdfc	*fdf;
+	char	*title;
+
+	fdf = malloc(sizeof(t_fdfc));
+	if (!fdf)
+		ft_error_log("MALLOC_FDF");
+	fdf->mlx = mlx_init();
+	if (!fdf->mlx)
+		ft_error_log("MLX_INIT");
+	title = ft_map_format(title);
+	fdf->win = mlx_new_window(fdf->mlx, WIDTH, HEIGHT, title);
+	free(title);
+	if (!fdf->win)
+		ft_error_log("MLX_WIN");
+	fdf->map_display = ft_init_img(fdf, &fdf->map_display, WIDTH, HEIGHT);
+	if (!fdf->map_display)
+		ft_error_log("MLX_WIN");
+	
+}
+//					Tareas para tomorrow, iniciar la cam, empezar a dibujar,
+//					lograr rotar los puntos, y si se puede implementar los controles
 
 int	main(int argc, char **argv)
 {
 	t_height	*map;
+	t_point		*point;
+	t_fdfc		*fdf;
+
+	atexit(leaks);
+	map = NULL;
 	if (argc == 2)
 	{
 		map = ft_make_map(argv[1]);
-		ft_print_mapi(map);
-		ft_free_map(map);
+		fdf = ft_init_fdf();
+		mlx_loop(fdf->mlx);
 	}
-	atexit(leaks);
+	ft_free_map(map);
+	ft_printf("usage: ./fdf 'map.fdf'\n");
+	exit(0);
 	return (0);	
 	/*
 	t_fdf	*fdf;
