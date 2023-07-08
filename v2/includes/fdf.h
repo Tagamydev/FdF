@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:14:03 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/07 21:39:09 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/08 14:24:09 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FDF_H
@@ -19,7 +19,48 @@
 # define ERROR_INVALID_MAP "INVALID_MAP\nMake sure the .fdf file has permissions"
 # define WIDTH 1920
 # define HEIGHT 1080
+# define ZOOM fdf->camera->zoom
+# define MAP_WIDTH fdf->map->width
+# define MAP_HEIGHT fdf->map->height
+# define ALPHA fdf->camera->alpha
+# define BETA fdf->camera->beta
+# define GAMMA fdf->camera->gamma
+# define OFFSET_X fdf->camera->x_offset
+# define OFFSET_Y fdf->camera->y_offset
+//------------------------------------------------------------------------//
+# define X0	who->x0
+# define Y0	who->y0
+# define X1	who->x1
+# define Y1	who->y1
+# define DX	who->dx
+# define DY	who->dy
+# define SX	who->sx
+# define SY	who->sy
+# define GRADIENT	who->gradient
+# define CUR_X	who->x
+# define CUR_Y	who->y
+# define INTERY	who->interny
+# define INTERX	who->internx
+# define COUNTER	who->i
 
+
+typedef struct s_who{
+	int	x0;
+	int	y0;
+	int	x1;
+	int	y1;
+	int	dx;
+	int	dy;
+	int	sx;
+	int	sy;
+	double	gradient;
+	double	x;
+	double	y;
+	double	intery;
+	double	interx;
+	int	i;
+}				t_who;
+//--------------------------------------------------------------------------//
 typedef enum e_projection{
 	ISO,
 	PARALLEL
@@ -103,11 +144,18 @@ typedef struct s_height{
 	struct s_height	*next;
 }				t_height;
 
+typedef struct s_mapi{
+	t_height	*map;
+	int			height;
+	int			width;
+}				t_mapi;
+
 typedef struct s_fdf{
 	void		*mlx;
 	void		*win;
-	t_height	*map;
+	t_mapi		*map;
 	t_img		map_display;
+	t_img		background;
 	t_camera	*camera;
 	t_height	*grid;
 }				t_fdfc;
@@ -120,12 +168,12 @@ void		ft_error_log(char *str);
 //	MLX stuff
 void		ft_put_pixel(t_img *img, int x, int y, int color);
 void		ft_fill_img(t_img *img, int color);
-t_img		*ft_init_img(t_fdf *fdf, t_img *img, int width, int height);
+t_img		*ft_init_img(t_fdfc *fdf, t_img *img, int width, int height);
 int			ft_get_color(int color, char *str);
 int			ft_lineal_mix(int c1, int c2, double mix);
 int			ft_mix_color(int color1, int color2, double tr);
 void		ft_put_display(t_fdf *fdf);
-t_img		*ft_open_img(t_fdf *fdf, t_img *img, char *path);
+t_img		*ft_open_img(t_fdfc *fdf, t_img *img, char *path);
 //	Parse map funtions
 void		ft_print_coord(t_coord_val *list);
 void		ft_free_coord(t_coord_val **list);

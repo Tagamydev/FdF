@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/07 21:39:14 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/08 14:37:55 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -28,7 +28,7 @@ void	ft_put_pixel(t_img *img, int x, int y, int color)
 {
 	char	*dst;
 
-	if (x >= 0 && y >= 0 && x < img->width && y < img->height)
+	if (x >= 0 && y >= 0 && x < img->width && y < img->height && y < HEIGHT && x < WIDTH)
 	{
 		dst = img->data_addr + ((y * img->line_size) + \
 		((x * (img->bits_per_pixel / 8))));
@@ -36,7 +36,7 @@ void	ft_put_pixel(t_img *img, int x, int y, int color)
 	}
 }
 
-t_img	*ft_init_img(t_fdf *fdf,t_img *img, int width, int height)
+t_img	*ft_init_img(t_fdfc *fdf,t_img *img, int width, int height)
 {	
 	void	*mlx;
 
@@ -115,7 +115,7 @@ void	ft_put_display(t_fdf *fdf)
 	return ;
 }
 
-t_img	*ft_open_img(t_fdf *fdf, t_img *img, char *path)
+t_img	*ft_open_img(t_fdfc *fdf, t_img *img, char *path)
 {
 	img->img = mlx_xpm_file_to_image(&fdf->mlx, path, &img->width, &img->height);
 	if (!img->img)
@@ -222,7 +222,7 @@ void	ft_draw_line(t_point f, t_point s, t_fdf *fdf)
 	cur = f;
 	while (cur.x != s.x || cur.y != s.y)
 	{
-		ft_put_pixel(&fdf->map_display, cur.x, cur.y, ft_color_degradade(f, s, cur));
+		ft_put_pixel(&fdf->map_display, cur.x, cur.y, 0x00FF0000/*ft_color_degradade(f, s, cur)*/);
 		if ((error * 2) > -delta.y)
 		{
 			error -= delta.y;
@@ -598,14 +598,27 @@ t_point	*ft_get_point(t_height *map, int x, int y)
 	return (point);
 }
 
-void	*ft_init_camera()
+t_camera	*ft_init_cam(void)
 {
+	t_camera *camera;
+
+	camera = malloc(sizeof(t_camera));
+	if (!camera)
+		ft_error_log("MALLOC_CAMERA");
+	camera->zoom = 1;
+	camera->alpha = 0;
+	camera->beta = 0;
+	camera->gamma = 0;
+	camera->z_divisor = 1;
+	camera->x_offset = 0;
+	camera->y_offset = 0;
+	return (camera);
 }
 
-void	*ft_init_fdf(t_fdfc *fdf)
+void	ft_init_fdf(t_fdfc **fdfp, char *title)
 {
 	t_fdfc	*fdf;
-	char	*title;
+
 
 	fdf = malloc(sizeof(t_fdfc));
 	if (!fdf)
@@ -618,29 +631,281 @@ void	*ft_init_fdf(t_fdfc *fdf)
 	free(title);
 	if (!fdf->win)
 		ft_error_log("MLX_WIN");
-	fdf->map_display = ft_init_img(fdf, &fdf->map_display, WIDTH, HEIGHT);
-	if (!fdf->map_display)
-		ft_error_log("MLX_WIN");
-	
+	ft_init_img(fdf, &fdf->map_display, WIDTH, HEIGHT);
+	if (!fdf->map_display.img)
+		ft_error_log("INIT_MAP_DISPLAY");
+	ft_fill_img(&fdf->map_display, 0xFF000000);
+	ft_open_img(fdf, &fdf->background, "./src/img/testui.xpm");
+	fdf->camera = ft_init_cam();
+	*fdfp = fdf;
+	return ;
 }
+
+int	ft_get_lenght(char *str, t_height *map)
+{
+	t_height	*tmp1;
+	t_width		*tmp2;
+	int	i;
+
+	i = 0;
+	tmp1 = map;
+	tmp2 = map->line;
+	if (*str == 'H')
+	{
+		while (tmp1)
+		{
+			tmp1 = tmp1->next;
+			i++;
+		}
+	}
+	else
+	{
+		while (tmp2)
+		{
+			tmp2 = tmp2->next;
+			i++;
+		}
+	}
+	return (i);
+}
+
+void	ft_rotate_x(int *y, int *z, double alpha)
+{
+	int previous_y;
+
+	previous_y = *y;
+	*y = previous_y * cos(alpha) + *z * sin(alpha);
+	*z = -previous_y * sin(alpha) + *z * cos(alpha);
+}
+
+void	ft_rotate_y(int *x, int *z, double beta)
+{
+	int previous_x;
+
+	previous_x = *x;
+	*x = previous_x * cos(beta) + *z * sin(beta);
+	*z = -previous_x * sin(beta) + *z * cos(beta);
+}
+
+void	ft_rotate_z(int *x, int *y, double gamma)
+{
+	int previous_x;
+	int previous_y;
+
+	previous_x = *x;
+	previous_y = *y;
+	*x = previous_x * cos(gamma) - previous_y * sin(gamma);
+	*y = previous_x * sin(gamma) + previous_y * cos(gamma);
+}
+
+void	ft_iso(int *x, int *y, int z)
+{
+	int	tmp_x;
+	int	tmp_y;
+
+	tmp_x = *x;
+	tmp_y = *y;
+	*x = (tmp_x - tmp_y) * cos(0.523599);
+	*y = -z + (tmp_x + tmp_y) * sin(0.523599);
+	z = 0;
+}
+
+void	ft_make_maths(t_point *point, t_fdfc *fdf)
+{
+	point->x *= ZOOM;
+	point->y *= ZOOM;
+	point->z *= ZOOM / fdf->camera->z_divisor;
+	point->x -= (MAP_WIDTH * ZOOM) / 2;
+	point->y -= (MAP_HEIGHT * ZOOM) / 2;
+	/*
+	ft_rotate_x(&point->y, &point->z, ALPHA);
+	ft_rotate_y(&point->x, &point->z, BETA);
+	ft_rotate_z(&point->x, &point->y, GAMMA);
+	*/
+	ft_iso(&point->x, &point->y, point->z);
+	point->x += (WIDTH) / 2 + OFFSET_X;
+	point->y += (HEIGHT + MAP_HEIGHT * ZOOM) / 2 + OFFSET_Y;
+	ft_printf("x:%d, y:%d\n", point->x, point->y);
+}
+
+t_point	ft_proyect(t_point *point, t_fdfc *fdf)
+{
+	t_point	point_clone;
+
+	ft_make_maths(point, fdf);
+	point_clone.x = point->x;
+	point_clone.y = point->y;
+	point_clone.z = point->z;
+	point_clone.color = point->color;
+	free(point);
+	return (point_clone);
+}
+
+t_who	*ft_init_who(t_point f, t_point s)
+{
+	t_who	*who;
+
+	who = malloc(sizeof(t_who));
+	X0 = f.x;
+   	Y0 = f.y;
+	X1 = s.x;
+	Y1 = s.y;
+	DX = ft_abs(x1 - x0);
+	DY = ft_abs(y1 - y0);
+	if (X0 < X1)
+		SX = 1;
+	else
+		SX = -1;
+	if (Y0 < Y1)
+		SY = 1;
+	else
+		SY = -1;
+	GRADIENT = (double)dy / dx;
+	CUR_X = x0;
+	CUR_Y = y0;
+	return (who);
+}
+
+
+void	ft_put_line(t_point f, t_point s, t_img *map_display)
+{
+	t_who	*who;
+
+	who = ft_init_who(f, s);
+    // Primera extremidad
+    drawPixel((int)x, (int)y, 1.0);
+
+    // Cálculo y dibujo de los píxeles intermedios
+    if (dx > dy) {
+        double intery = y + gradient;
+
+        for (COUNTER = 0; i < dx - 1; i++) {
+            drawPixel((int)x, (int)y, 1 - (intery - floor(intery)));
+            drawPixel((int)x, (int)y + 1, intery - floor(intery));
+
+            x += sx;
+            intery += gradient;
+        }
+    } else {
+        double interx = x + 1.0 / gradient;
+
+        for (COUNTER = 0; i < dy - 1; i++) {
+            drawPixel((int)x, (int)y, 1 - (interx - floor(interx)));
+            drawPixel((int)x + 1, (int)y, interx - floor(interx));
+
+            y += sy;
+            interx += 1.0 / gradient;
+        }
+    }
+
+    // Última extremidad
+    drawPixel(x1, y1, 1.0);
+
+	/*
+    int x0 = f.x;
+    int y0 = f.y;
+    int x1 = s.x;
+    int y1 = s.y;
+
+    int dx = abs(x1 - x0);
+    int dy = abs(y1 - y0);
+    int sx = (x0 < x1) ? 1 : -1;
+    int sy = (y0 < y1) ? 1 : -1;
+    int err = dx - dy;
+
+    while (1) {
+		ft_put_pixel(map_display, x0, y0, 0x00FF0000);//ft_color_degradade(f, s, cur)
+        if (x0 == x1 && y0 == y1)
+            break;
+
+        int e2 = 2 * err;
+
+        if (e2 > -dy) {
+            err -= dy;
+            x0 += sx;
+        }
+
+        if (e2 < dx) {
+            err += dx;
+            y0 += sy;
+        }
+    }
+	*/
+
+}
+
+void	ft_ft_draw(t_fdfc *fdf)
+{
+	int	x;
+	int	y;
+
+	x = 0;
+	y = 0;
+	while (y < MAP_HEIGHT)
+	{
+		x = 0;
+		while (x < MAP_WIDTH)
+		{
+			if (x != (MAP_WIDTH - 1))
+				ft_put_line(ft_proyect(ft_get_point(fdf->map->map, x, y), fdf),\
+				ft_proyect(ft_get_point(fdf->map->map, x + 1, y), fdf), &fdf->map_display);
+			if (y != (MAP_HEIGHT - 1))
+				ft_put_line(ft_proyect(ft_get_point(fdf->map->map, x, y), fdf), \
+				ft_proyect(ft_get_point(fdf->map->map, x, y + 1), fdf), &fdf->map_display);
+			ft_printf("(%d, %d)", x, y);
+			x++;
+		}
+		ft_printf("\n");
+		y++;
+	}
+	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->background.img, 0, 0);
+	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->map_display.img, 0, 0);
+}
+
 //					Tareas para tomorrow, iniciar la cam, empezar a dibujar,
+//					IMPLEMENTA LA VERIFICACION DE MAPA!!!!!!!!!!!!!!!!!!
 //					lograr rotar los puntos, y si se puede implementar los controles
+
+int	ft_min(int x, int y)
+{
+	if (x < y)
+		return (x);
+	return (y);
+}
+
+t_fdfc	*ft_set_up(char *str)
+{
+	t_fdfc		*fdf;
+	t_height	*map;
+	int	width;
+	int	height;
+
+	map = ft_make_map(str);
+	ft_init_fdf(&fdf, str);
+	fdf->map = malloc(sizeof(t_mapi));
+	if (!fdf->map)
+		ft_error_log("MALLOC_MAPI");
+	fdf->map->map = map;
+	width = ft_get_lenght("W", fdf->map->map);
+	height = ft_get_lenght("H", fdf->map->map);
+	MAP_HEIGHT = height;
+	MAP_WIDTH = width;
+	ZOOM = ft_min((WIDTH / width / 2), (HEIGHT / height / 2));
+	return (fdf);
+}
 
 int	main(int argc, char **argv)
 {
-	t_height	*map;
-	t_point		*point;
 	t_fdfc		*fdf;
 
 	atexit(leaks);
-	map = NULL;
+	fdf = NULL;
 	if (argc == 2)
 	{
-		map = ft_make_map(argv[1]);
-		fdf = ft_init_fdf();
+		fdf = ft_set_up(argv[1]);
+		ft_ft_draw(fdf);
 		mlx_loop(fdf->mlx);
 	}
-	ft_free_map(map);
 	ft_printf("usage: ./fdf 'map.fdf'\n");
 	exit(0);
 	return (0);	

@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/01 13:46:09 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/07 21:39:12 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/08 10:05:56 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -38,6 +38,7 @@ char	*ft_map_format(char *str)
 	return (result);
 }
 
+/*
 t_camera	*ft_init_camera(t_fdf *fdf)
 {
 	t_camera	*camera;
@@ -116,3 +117,4 @@ t_fdf	*fdf_init(t_map *map, char *title)
 	fdf->map = map;
 	return (fdf);
 }
+*/
