@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:14:03 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/08 20:31:57 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/09 00:29:49 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FDF_H
@@ -27,13 +27,22 @@
 # define GAMMA fdf->camera->gamma
 # define OFFSET_X fdf->camera->x_offset
 # define OFFSET_Y fdf->camera->y_offset
+# define PROJ fdf->angle.projection
 //------------------------------------------------------------------------//
 
 //--------------------------------------------------------------------------//
 typedef enum e_projection{
 	ISO,
-	PARALLEL
+	ISO_GAMES,
+	PARALLEL,
+	CONIC,
+	TOTAL
 }		t_projection;
+
+typedef struct s_angle{
+	t_projection	projection;
+	double			angle;
+}				t_angle;
 
 typedef struct s_point{
 	int	x;
@@ -132,6 +141,7 @@ typedef struct s_fdf{
 	t_img		background;
 	t_camera	*camera;
 	t_height	*grid;
+	t_angle		angle;
 }				t_fdfc;
 //---------------------------------------------------------------------------------------------------------
 

@@ -6,14 +6,14 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/08 20:31:55 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/09 00:29:47 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
 
 void	leaks()
 {
-	system("leaks aoeu");
+	system("leaks fdf");
 }
 
 void	ft_error_log(char *str)
@@ -200,6 +200,17 @@ int	ft_color_degradade(t_point init, t_point end, t_point current)
 //			a partir de un punto x y y obtener dos puntos para trazar una linea
 //
 
+double	ft_get_angle(t_fdfc *fdf)
+{
+	if (PROJ == ISO)
+		return (0.523599);
+	if (PROJ == ISO_GAMES)
+		return (0.463646716);
+	if (PROJ == CONIC)
+		return (0.785398);
+	return (0);
+}
+
 char	*get_all_doc(int fd)
 {
 	static struct s_data_base	file[OPEN_MAX];
@@ -233,7 +244,7 @@ t_width		*ft_new_column_node(char *str)
 	if (numbers[1])
 		col->color = ft_atoi_base(numbers[1], 16);
 	else
-		col->color = 0x00000000;
+		col->color = 0x00FFFFFF;
 	col->next = NULL;
 	ft_free_split(numbers);
 	return (col);
@@ -530,7 +541,9 @@ void	ft_init_fdf(t_fdfc **fdfp, char *title)
 		ft_error_log("INIT_MAP_DISPLAY");
 	ft_fill_img(&fdf->map_display, 0xFF000000);
 	ft_init_img(fdf, &fdf->background, WIDTH, HEIGHT);
-	ft_fill_img(&fdf->background, 0x00FFFFFF);
+	ft_fill_img(&fdf->background, 0x00000000);
+	fdf->angle.projection = ISO;
+	fdf->angle.angle = ft_get_angle(fdf);
 	//ft_open_img(fdf, &fdf->background, "./src/img/testui.xpm");
 	fdf->camera = ft_init_cam();
 	*fdfp = fdf;
@@ -594,15 +607,15 @@ void	ft_rotate_z(int *x, int *y, double gamma)
 	*y = previous_x * sin(gamma) + previous_y * cos(gamma);
 }
 
-void	ft_iso(int *x, int *y, int z)
+void	ft_iso(int *x, int *y, int z, t_fdfc *fdf)
 {
 	int	tmp_x;
 	int	tmp_y;
 
 	tmp_x = *x;
 	tmp_y = *y;
-	*x = (tmp_x - tmp_y) * cos(0.523599);
-	*y = -z + (tmp_x + tmp_y) * sin(0.523599);
+	*x = (tmp_x - tmp_y) * cos(ft_get_angle(fdf));
+	*y = -z + (tmp_x + tmp_y) * sin(ft_get_angle(fdf));
 	z = 0;
 }
 
@@ -616,9 +629,40 @@ void	ft_make_maths(t_point *point, t_fdfc *fdf)
 	ft_rotate_x(&point->y, &point->z, ALPHA);
 	ft_rotate_y(&point->x, &point->z, BETA);
 	ft_rotate_z(&point->x, &point->y, GAMMA);
-	ft_iso(&point->x, &point->y, point->z);
+	if (PROJ == ISO || PROJ == ISO_GAMES || PROJ == CONIC)
+		ft_iso(&point->x, &point->y, point->z, fdf);
 	point->x += (WIDTH) / 2 + OFFSET_X;
 	point->y += (HEIGHT + MAP_HEIGHT * ZOOM) / 2 + OFFSET_Y;
+}
+
+t_point	ft_proyect_minimap(t_point *point, t_fdfc *fdf)
+{
+	t_point	point_clone;
+	int		max;
+	double	i;
+
+	if (MAP_WIDTH > MAP_HEIGHT)
+		max = MAP_WIDTH;
+	else
+		max = MAP_HEIGHT;
+	if (max > 200)
+	{
+		i = 1;
+		while (max)
+		{
+			i = i / 1.2;
+			max = max / 10;
+		}
+	}
+	else 
+		i = 200 / max;
+	point_clone.x = point->x * i;
+	point_clone.y = point->y * i;
+	point_clone.z = point->z * i;
+	point_clone.color = point->color;
+	free(point);
+	fdf = NULL;
+	return (point_clone);
 }
 
 t_point	ft_proyect(t_point *point, t_fdfc *fdf)
@@ -692,6 +736,8 @@ void	ft_ft_draw(t_fdfc *fdf)
 
 	x = 0;
 	y = 0;
+
+	ft_fill_img(&fdf->map_display, 0xFF000000);
 	while (y < MAP_HEIGHT)
 	{
 		x = 0;
@@ -707,6 +753,24 @@ void	ft_ft_draw(t_fdfc *fdf)
 		}
 		y++;
 	}
+	x = 0;
+	y = 0;
+	while (y < MAP_HEIGHT)
+	{
+		x = 0;
+		while (x < MAP_WIDTH)
+		{
+			if (x != (MAP_WIDTH - 1))
+				ft_put_line(ft_proyect_minimap(ft_get_point(fdf->map->map, x, y), fdf),\
+				ft_proyect_minimap(ft_get_point(fdf->map->map, x + 1, y), fdf), &fdf->map_display);
+			if (y != (MAP_HEIGHT - 1))
+				ft_put_line(ft_proyect_minimap(ft_get_point(fdf->map->map, x, y), fdf), \
+				ft_proyect_minimap(ft_get_point(fdf->map->map, x, y + 1), fdf), &fdf->map_display);
+			x++;
+		}
+		y++;
+	}
+
 	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->background.img, 0, 0);
 	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->map_display.img, 0, 0);
 }
@@ -743,6 +807,46 @@ t_fdfc	*ft_set_up(char *str)
 	return (fdf);
 }
 
+void	ft_close(void *param)
+{
+	(void)param;
+	exit(0);
+}
+
+void	ft_change_proyection(t_fdfc *fdf)
+{
+	if (PROJ == CONIC)
+		PROJ = ISO;
+	else
+		PROJ++;
+	if (PROJ == PARALLEL)
+	{
+		ALPHA = 0;
+		BETA = 0;
+		GAMMA = 0;
+	}
+	ft_ft_draw(fdf);
+}
+
+int	ft_key_press(int key, void *param)
+{
+	t_fdfc	*fdf;
+
+	fdf = (t_fdfc *)param;
+	if (key == 53)
+		ft_close(param);
+	if (key == 87)
+		ft_change_proyection(fdf);
+	return (0);
+}
+
+void	ft_controls(t_fdfc *fdf)
+{
+	mlx_hook(fdf->win, 17, 0, (int (*)())ft_close, fdf);
+	mlx_hook(fdf->win, 2, 0, (int (*)())ft_key_press, fdf);
+	return ;
+}
+
 int	main(int argc, char **argv)
 {
 	t_fdfc		*fdf;
@@ -753,7 +857,7 @@ int	main(int argc, char **argv)
 	{
 		fdf = ft_set_up(argv[1]);
 		ft_ft_draw(fdf);
-		//ft_controls(fdf);
+		ft_controls(fdf);
 		mlx_loop(fdf->mlx);
 	}
 	ft_printf("usage: ./fdf 'map.fdf'\n");

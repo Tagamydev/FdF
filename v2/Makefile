@@ -6,11 +6,11 @@
 #    By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/24 19:28:25 by samusanc          #+#    #+#              #
-#    Updated: 2023/07/02 15:37:16 by samusanc         ###   ########.fr        #
+#    Updated: 2023/07/08 21:27:27 by samusanc         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= aoeu
+NAME	= fdf
 CFLAGS	= -Wall -Wextra -Werror -I ./includes -I ./libft/ -I /usr/local/include
 CC		= gcc $(CFLAGS)
 MLX		= -L /usr/local/lib -lmlx -lm -framework OpenGL -framework AppKit
