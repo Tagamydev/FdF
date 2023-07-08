@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/08 15:01:57 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/08 19:23:48 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -717,15 +717,12 @@ void	ft_make_maths(t_point *point, t_fdfc *fdf)
 	point->z *= ZOOM / fdf->camera->z_divisor;
 	point->x -= (MAP_WIDTH * ZOOM) / 2;
 	point->y -= (MAP_HEIGHT * ZOOM) / 2;
-	/*
 	ft_rotate_x(&point->y, &point->z, ALPHA);
 	ft_rotate_y(&point->x, &point->z, BETA);
 	ft_rotate_z(&point->x, &point->y, GAMMA);
-	*/
 	ft_iso(&point->x, &point->y, point->z);
 	point->x += (WIDTH) / 2 + OFFSET_X;
 	point->y += (HEIGHT + MAP_HEIGHT * ZOOM) / 2 + OFFSET_Y;
-	ft_printf("x:%d, y:%d\n", point->x, point->y);
 }
 
 t_point	ft_proyect(t_point *point, t_fdfc *fdf)
@@ -741,97 +738,40 @@ t_point	ft_proyect(t_point *point, t_fdfc *fdf)
 	return (point_clone);
 }
 
-t_who	*ft_init_who(t_point f, t_point s)
-{
-	t_who	*who;
-
-	who = malloc(sizeof(t_who));
-	X0 = f.x;
-   	Y0 = f.y;
-	X1 = s.x;
-	Y1 = s.y;
-	DX = ft_abs(x1 - x0);
-	DY = ft_abs(y1 - y0);
-	if (X0 < X1)
-		SX = 1;
-	else
-		SX = -1;
-	if (Y0 < Y1)
-		SY = 1;
-	else
-		SY = -1;
-	GRADIENT = (double)dy / dx;
-	CUR_X = x0;
-	CUR_Y = y0;
-	return (who);
-}
-
 void	ft_clone(t_point *point, t_points line, int x, int y)
 {
-	point.x = x;
-	point.y = y;
-	point.color = ft_color_degradade(line.start, line.end, *point);
+	point->x = x;
+	point->y = y;
+	point->color = ft_color_degradade(line.start, line.end, *point);
 }
 
-void	ft_draw_pixel(t_point point, double alpha, t_img *img)
+void	ft_draw_pixel(t_point point, t_img *img)
 {
-		ft_put_pixel(img, x0, y0, ft_mix_color(ft_make_translucid(point->color), point->color), alpha);
-	
+		//ft_put_pixel(img, point.x, point.y, ft_mix_color(ft_make_translucid(point.color), point.color, alpha));
+		ft_put_pixel(img, point.x, point.y, point.color);
 }
 
 void	ft_put_line(t_point f, t_point s, t_img *map_display)
 {
-	t_who		*who;
-	t_point		tmp;
-	t_points	line;
-
-	line.start = f;
-	line.end = s;
-	who = ft_init_who(f, s);
-    // Primera extremidad
-	ft_clone(&tmp, line, CUR_X, CUR_Y);
-	ft_draw_pixel((int)x, (int)y, 1.0);
-
-    // Cálculo y dibujo de los píxeles intermedios
-    if (dx > dy) {
-        double intery = y + gradient;
-
-        for (COUNTER = 0; i < dx - 1; i++) {
-            drawPixel((int)x, (int)y, 1 - (intery - floor(intery)));
-            drawPixel((int)x, (int)y + 1, intery - floor(intery));
-
-            x += sx;
-            intery += gradient;
-        }
-    } else {
-        double interx = x + 1.0 / gradient;
-
-        for (COUNTER = 0; i < dy - 1; i++) {
-            drawPixel((int)x, (int)y, 1 - (interx - floor(interx)));
-            drawPixel((int)x + 1, (int)y, interx - floor(interx));
-
-            y += sy;
-            interx += 1.0 / gradient;
-        }
-    }
-
-    // Última extremidad
-    drawPixel(x1, y1, 1.0);
-
-	/*
     int x0 = f.x;
     int y0 = f.y;
     int x1 = s.x;
     int y1 = s.y;
+	t_point	tmp;
+	t_points	line;
 
-    int dx = abs(x1 - x0);
-    int dy = abs(y1 - y0);
+
+	line.start = f;
+	line.end = s;
+    int dx = ft_abs(x1 - x0);
+    int dy = ft_abs(y1 - y0);
     int sx = (x0 < x1) ? 1 : -1;
     int sy = (y0 < y1) ? 1 : -1;
     int err = dx - dy;
 
     while (1) {
-		ft_put_pixel(map_display, x0, y0, 0x00FF0000);//ft_color_degradade(f, s, cur)
+		ft_clone(&tmp, line, x0, y0);
+		ft_draw_pixel(tmp, map_display);
         if (x0 == x1 && y0 == y1)
             break;
 
@@ -847,8 +787,6 @@ void	ft_put_line(t_point f, t_point s, t_img *map_display)
             y0 += sy;
         }
     }
-	*/
-
 }
 
 void	ft_ft_draw(t_fdfc *fdf)
@@ -869,10 +807,8 @@ void	ft_ft_draw(t_fdfc *fdf)
 			if (y != (MAP_HEIGHT - 1))
 				ft_put_line(ft_proyect(ft_get_point(fdf->map->map, x, y), fdf), \
 				ft_proyect(ft_get_point(fdf->map->map, x, y + 1), fdf), &fdf->map_display);
-			ft_printf("(%d, %d)", x, y);
 			x++;
 		}
-		ft_printf("\n");
 		y++;
 	}
 	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->background.img, 0, 0);

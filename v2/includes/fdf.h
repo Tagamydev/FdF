@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:14:03 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/08 15:02:02 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/08 19:16:56 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FDF_H
@@ -28,43 +28,7 @@
 # define OFFSET_X fdf->camera->x_offset
 # define OFFSET_Y fdf->camera->y_offset
 //------------------------------------------------------------------------//
-# define X0	who->x0
-# define Y0	who->y0
-# define X1	who->x1
-# define Y1	who->y1
-# define DX	who->dx
-# define DY	who->dy
-# define SX	who->sx
-# define SY	who->sy
-# define GRADIENT	who->gradient
-# define CUR_X	who->x
-# define CUR_Y	who->y
-# define INTERY	who->interny
-# define INTERX	who->internx
-# define COUNTER	who->i
 
-
-typedef struct s_who{
-	int	x0;
-	int	y0;
-	int	x1;
-	int	y1;
-	int	dx;
-	int	dy;
-	int	sx;
-	int	sy;
-	double	gradient;
-	double	x;
-	double	y;
-	double	intery;
-	double	interx;
-	int	i;
-}				t_who;
-
-typedef struct s_points{
-	t_point	start;
-	t_point end;
-}				t_points;
 //--------------------------------------------------------------------------//
 typedef enum e_projection{
 	ISO,
@@ -77,6 +41,11 @@ typedef struct s_point{
 	int	z;
 	int	color;
 }				t_point;
+
+typedef struct s_points{
+	t_point	start;
+	t_point end;
+}				t_points;
 
 typedef struct s_map{
 	int		width;
