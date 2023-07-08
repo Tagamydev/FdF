@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:14:03 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/08 14:24:09 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/08 15:02:02 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FDF_H
@@ -60,6 +60,11 @@ typedef struct s_who{
 	double	interx;
 	int	i;
 }				t_who;
+
+typedef struct s_points{
+	t_point	start;
+	t_point end;
+}				t_points;
 //--------------------------------------------------------------------------//
 typedef enum e_projection{
 	ISO,

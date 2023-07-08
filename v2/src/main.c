@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/08 14:37:55 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/08 15:01:57 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -766,14 +766,31 @@ t_who	*ft_init_who(t_point f, t_point s)
 	return (who);
 }
 
+void	ft_clone(t_point *point, t_points line, int x, int y)
+{
+	point.x = x;
+	point.y = y;
+	point.color = ft_color_degradade(line.start, line.end, *point);
+}
+
+void	ft_draw_pixel(t_point point, double alpha, t_img *img)
+{
+		ft_put_pixel(img, x0, y0, ft_mix_color(ft_make_translucid(point->color), point->color), alpha);
+	
+}
 
 void	ft_put_line(t_point f, t_point s, t_img *map_display)
 {
-	t_who	*who;
+	t_who		*who;
+	t_point		tmp;
+	t_points	line;
 
+	line.start = f;
+	line.end = s;
 	who = ft_init_who(f, s);
     // Primera extremidad
-    drawPixel((int)x, (int)y, 1.0);
+	ft_clone(&tmp, line, CUR_X, CUR_Y);
+	ft_draw_pixel((int)x, (int)y, 1.0);
 
     // Cálculo y dibujo de los píxeles intermedios
     if (dx > dy) {
