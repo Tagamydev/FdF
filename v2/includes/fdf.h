@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:14:03 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/09 00:29:49 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/09 21:55:48 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FDF_H
@@ -27,6 +27,7 @@
 # define GAMMA fdf->camera->gamma
 # define OFFSET_X fdf->camera->x_offset
 # define OFFSET_Y fdf->camera->y_offset
+# define Z_DIV fdf->camera->z_divisor
 # define PROJ fdf->angle.projection
 //------------------------------------------------------------------------//
 
@@ -35,6 +36,7 @@ typedef enum e_projection{
 	ISO,
 	ISO_GAMES,
 	PARALLEL,
+	CUSTOM,
 	CONIC,
 	TOTAL
 }		t_projection;
@@ -102,18 +104,6 @@ typedef struct s_mouse{
 	int		previous_x;
 	int		previous_y;
 }				t_mouse;
-
-typedef struct s_fdfc{
-	void		*mlx;
-	void		*win;
-	t_map		*map;
-	t_img		map_display;
-	t_img		mesh;
-	t_img		background;
-	t_img		ui;
-	t_mouse		*mouse;
-	t_camera	*camera;
-}				t_fdf;
 //------------------------------------------------------NUEVA ERA DESDE AQUI-----------------------------
 
 typedef struct s_width{
@@ -142,6 +132,9 @@ typedef struct s_fdf{
 	t_camera	*camera;
 	t_height	*grid;
 	t_angle		angle;
+	double			translation;
+	unsigned char	random;
+	int				play;
 }				t_fdfc;
 //---------------------------------------------------------------------------------------------------------
 
@@ -156,7 +149,6 @@ t_img		*ft_init_img(t_fdfc *fdf, t_img *img, int width, int height);
 int			ft_get_color(int color, char *str);
 int			ft_lineal_mix(int c1, int c2, double mix);
 int			ft_mix_color(int color1, int color2, double tr);
-void		ft_put_display(t_fdf *fdf);
 t_img		*ft_open_img(t_fdfc *fdf, t_img *img, char *path);
 //	Parse map funtions
 void		ft_print_coord(t_coord_val *list);
@@ -174,9 +166,6 @@ void		ft_stack_to_arrays(t_coord_val **coords_stack, t_map *map);
 //	Inits
 char		*ft_map_format(char *str);
 t_map		*ft_init_map(void);
-t_camera	*ft_init_camera(t_fdf *fdf);
-void		ft_render_init(t_fdf *fdf);
-t_fdf		*fdf_init(t_map *map, char *title);
 //	Main
 int			main(int argc, char **argv);
 

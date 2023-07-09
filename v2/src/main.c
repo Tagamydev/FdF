@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/09 00:29:47 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/09 21:52:51 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -107,14 +107,6 @@ int	ft_mix_color(int color1, int color2, double tr)
 	return (t << 24 | r << 16| g << 8 | b);
 }
 
-void	ft_put_display(t_fdf *fdf)
-{
-	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->background.img, 0, 0);
-	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->map_display.img, 0, 0);
-	mlx_put_image_to_window(fdf->mlx, fdf->win, fdf->ui.img, 4, 5);
-	return ;
-}
-
 t_img	*ft_open_img(t_fdfc *fdf, t_img *img, char *path)
 {
 	img->img = mlx_xpm_file_to_image(&fdf->mlx, path, &img->width, &img->height);
@@ -208,6 +200,8 @@ double	ft_get_angle(t_fdfc *fdf)
 		return (0.463646716);
 	if (PROJ == CONIC)
 		return (0.785398);
+	if (PROJ == CUSTOM)
+		return (fdf->angle.angle);
 	return (0);
 }
 
@@ -513,7 +507,7 @@ t_camera	*ft_init_cam(void)
 	camera->zoom = 1;
 	camera->alpha = 0;
 	camera->beta = 0;
-	camera->gamma = 0;
+	camera->gamma = -1.55;
 	camera->z_divisor = 1;
 	camera->x_offset = 0;
 	camera->y_offset = 0;
@@ -542,8 +536,10 @@ void	ft_init_fdf(t_fdfc **fdfp, char *title)
 	ft_fill_img(&fdf->map_display, 0xFF000000);
 	ft_init_img(fdf, &fdf->background, WIDTH, HEIGHT);
 	ft_fill_img(&fdf->background, 0x00000000);
-	fdf->angle.projection = ISO;
+	fdf->angle.projection = ISO_GAMES;
 	fdf->angle.angle = ft_get_angle(fdf);
+	fdf->translation = 1;
+	fdf->play = 0;
 	//ft_open_img(fdf, &fdf->background, "./src/img/testui.xpm");
 	fdf->camera = ft_init_cam();
 	*fdfp = fdf;
@@ -621,6 +617,8 @@ void	ft_iso(int *x, int *y, int z, t_fdfc *fdf)
 
 void	ft_make_maths(t_point *point, t_fdfc *fdf)
 {
+	if (point->z != 0)
+		point->z *= fdf->translation;
 	point->x *= ZOOM;
 	point->y *= ZOOM;
 	point->z *= ZOOM / fdf->camera->z_divisor;
@@ -629,7 +627,7 @@ void	ft_make_maths(t_point *point, t_fdfc *fdf)
 	ft_rotate_x(&point->y, &point->z, ALPHA);
 	ft_rotate_y(&point->x, &point->z, BETA);
 	ft_rotate_z(&point->x, &point->y, GAMMA);
-	if (PROJ == ISO || PROJ == ISO_GAMES || PROJ == CONIC)
+	if (PROJ == ISO || PROJ == ISO_GAMES || PROJ == CONIC || PROJ == CUSTOM)
 		ft_iso(&point->x, &point->y, point->z, fdf);
 	point->x += (WIDTH) / 2 + OFFSET_X;
 	point->y += (HEIGHT + MAP_HEIGHT * ZOOM) / 2 + OFFSET_Y;
@@ -687,7 +685,6 @@ void	ft_clone(t_point *point, t_points line, int x, int y)
 
 void	ft_draw_pixel(t_point point, t_img *img)
 {
-		//ft_put_pixel(img, point.x, point.y, ft_mix_color(ft_make_translucid(point.color), point.color, alpha));
 		ft_put_pixel(img, point.x, point.y, point.color);
 }
 
@@ -823,9 +820,95 @@ void	ft_change_proyection(t_fdfc *fdf)
 	{
 		ALPHA = 0;
 		BETA = 0;
-		GAMMA = 0;
+		GAMMA = 1.55;
 	}
 	ft_ft_draw(fdf);
+}
+
+int	ft_random(unsigned char seed)
+{
+	static unsigned char	current;
+	unsigned char tmp;
+
+	if (seed != 0)
+	{
+		tmp = current;
+		current = (unsigned char)seed;
+	}
+	else
+		tmp = 0;
+	current = (23 * current + 42 - (tmp / 3)) % 342;
+	return (current);
+}
+
+int	ft_rotate(int key, t_fdfc *fdf)
+{
+	if (key == 91)	
+		ALPHA -= 0.1;
+	else if (key == 84)	
+		ALPHA += 0.1;
+	else if (key == 86)
+		GAMMA += 0.05;
+	else if (key == 88)
+		GAMMA -= 0.05;
+	else if (key == 15)
+	{
+		ALPHA = (int)ft_random(fdf->random) / 4;
+		BETA = (int)ft_random(fdf->random)  / 4;
+		GAMMA = (int)ft_random(fdf->random) / 4;
+		OFFSET_X = (int)ft_random(fdf->random) / 4;
+		OFFSET_Y = (int)ft_random(fdf->random) / 4;
+		OFFSET_Y -= (int)ft_random(fdf->random) / 2;
+		OFFSET_Y -= 100;
+		ZOOM = (int)(ft_random(fdf->random));
+		ZOOM -= (int)((ft_random(fdf->random) - ft_random(fdf->random)));
+	}
+	else if (key == 29)
+	{
+		OFFSET_X = 0;
+		OFFSET_Y = 0;
+		ALPHA = 0;
+		BETA = 0;
+		GAMMA = -1.5;
+	}
+	else if (key == 30)
+	{
+		if (PROJ == CUSTOM)
+			fdf->angle.angle += 0.05;
+		else
+			fdf->translation += 0.25;
+	}
+	else if (key == 44)
+	{
+		if (PROJ == CUSTOM)
+			fdf->angle.angle -= 0.05;
+		else
+			fdf->translation -= 0.25;
+	}
+	else if (key == 69)
+		ZOOM++;
+	else if (key == 78)
+		ZOOM--;
+	else if (key >= 123 && key <= 126)
+	{
+		if (key == 125)
+		OFFSET_Y += 10;
+		if (key == 126)
+		OFFSET_Y -= 10;
+		if (key == 124)
+		OFFSET_X += 20;
+		if (key == 123)
+		OFFSET_X -= 20;
+	}
+	else if (key == 49)
+	{
+		if (fdf->play)
+			fdf->play = 0;
+		else 
+			fdf->play = 1;
+	}
+	ft_ft_draw(fdf);
+	return (0);
 }
 
 int	ft_key_press(int key, void *param)
@@ -835,15 +918,39 @@ int	ft_key_press(int key, void *param)
 	fdf = (t_fdfc *)param;
 	if (key == 53)
 		ft_close(param);
+	if (key == 91 || key == 86 \
+		|| key == 84 || key == 88 \
+		|| key == 15 || key == 29 \
+		|| key == 30 || key == 44 \
+		|| key == 69 || key == 78 \
+		|| key == 49 || key == 98 \
+		|| key == 123 || key == 124 \
+		|| key == 126 || key == 125)
+		ft_rotate(key, fdf);
 	if (key == 87)
 		ft_change_proyection(fdf);
+	ft_printf("key:%d\n", key);
 	return (0);
+}
+
+void	ft_counter(void *param)
+{
+	t_fdfc	*fdf;
+
+	fdf = (t_fdfc *)param;
+	fdf->random += 1;
+	if (fdf->play)
+	{
+		GAMMA += 0.01;
+		ft_ft_draw(fdf);
+	}
 }
 
 void	ft_controls(t_fdfc *fdf)
 {
 	mlx_hook(fdf->win, 17, 0, (int (*)())ft_close, fdf);
 	mlx_hook(fdf->win, 2, 0, (int (*)())ft_key_press, fdf);
+	mlx_loop_hook(fdf->mlx, (int (*)())ft_counter, fdf);
 	return ;
 }
 
