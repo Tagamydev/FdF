@@ -6,12 +6,12 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:17:36 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 15:43:31 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 18:35:33 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
 
-void	leaks()
+void	leaks(void)
 {
 	system("leaks fdf");
 }
@@ -20,8 +20,8 @@ t_fdfc	*ft_set_up(char *str)
 {
 	t_fdfc		*fdf;
 	t_height	*map;
-	int	width;
-	int	height;
+	int			width;
+	int			height;
 
 	map = ft_make_map(str);
 	ft_init_fdf(&fdf, str);
@@ -60,5 +60,5 @@ int	main(int argc, char **argv)
 	}
 	ft_printf("usage: ./fdf 'map.fdf'\n");
 	exit(0);
-	return (0);	
+	return (0);
 }

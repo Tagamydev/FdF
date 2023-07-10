@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 16:14:03 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 16:41:12 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 18:35:37 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FDF_H
@@ -65,16 +65,16 @@ typedef struct s_mapi{
 }				t_mapi;
 
 typedef struct s_bb{
-	int	x0;
-	int	y0;
-	int	x1;
-	int	y1;
-	int dx;
-	int	dy;
-	int	sx;
-	int	sy;
-	int	err;
-	int	e2;
+	int			x0;
+	int			y0;
+	int			x1;
+	int			y1;
+	int			dx;
+	int			dy;
+	int			sx;
+	int			sy;
+	int			err;
+	int			e2;
 	t_points	line;
 }				t_bb;
 

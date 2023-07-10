@@ -6,12 +6,12 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 17:44:45 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 18:05:48 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 18:08:20 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
 
-static void	ft_algo(t_fdfc *fdf)
+static void	ft_rotate_util(t_fdfc *fdf)
 {
 	fdf->camera->alpha = (int)ft_random(fdf->random) / 4;
 	fdf->camera->beta = (int)ft_random(fdf->random) / 4;
@@ -25,7 +25,7 @@ static void	ft_algo(t_fdfc *fdf)
 	ft_random(fdf->random)));
 }
 
-static void	ft_algo_2(t_fdfc *fdf)
+static void	ft_rotate_util_2(t_fdfc *fdf)
 {
 	fdf->camera->zoom = ft_min((WIDTH / ft_get_lenght("W", fdf->map->map) / 2), \
 	(HEIGHT / ft_get_lenght("H", fdf->map->map) / 2));
@@ -36,7 +36,7 @@ static void	ft_algo_2(t_fdfc *fdf)
 	fdf->camera->gamma = -1.5;
 }
 
-static void	ft_algo_3(t_fdfc *fdf, int i)
+static void	ft_rotate_util_3(t_fdfc *fdf, int i)
 {
 	if (i == 1)
 	{
@@ -63,7 +63,7 @@ static void	ft_algo_3(t_fdfc *fdf, int i)
 	}
 }
 
-static void	ft_algo_4(t_fdfc *fdf, int i)
+static void	ft_rotate_util_4(t_fdfc *fdf, int i)
 {
 	if (i == 1)
 	{
@@ -90,23 +90,23 @@ int	ft_rotate(int key, t_fdfc *fdf)
 	if (key == 91)
 		fdf->camera->alpha -= 0.1;
 	else if (key >= 84 && key <= 88)
-		ft_algo_3(fdf, key);
+		ft_rotate_util_3(fdf, key);
 	else if (key == 15)
-		ft_algo(fdf);
+		ft_rotate_util(fdf);
 	else if (key == 29)
-		ft_algo_2(fdf);
+		ft_rotate_util_2(fdf);
 	else if (key == 30)
-		ft_algo_3(fdf, 1);
+		ft_rotate_util_3(fdf, 1);
 	else if (key == 44)
-		ft_algo_4(fdf, 1);
+		ft_rotate_util_4(fdf, 1);
 	else if (key == 69)
 		fdf->camera->zoom++;
 	else if (key == 78)
 		fdf->camera->zoom--;
 	else if (key >= 123 && key <= 126)
-		ft_algo_4(fdf, key);
+		ft_rotate_util_4(fdf, key);
 	else if (key == 49)
-		ft_algo_3(fdf, 2);
+		ft_rotate_util_3(fdf, 2);
 	ft_ft_draw(fdf);
 	return (0);
 }

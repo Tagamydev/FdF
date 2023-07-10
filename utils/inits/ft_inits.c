@@ -6,14 +6,14 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 15:32:29 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 15:50:16 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 18:22:47 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
 
 t_camera	*ft_init_cam(void)
 {
-	t_camera *camera;
+	t_camera	*camera;
 
 	camera = malloc(sizeof(t_camera));
 	if (!camera)
@@ -28,10 +28,17 @@ t_camera	*ft_init_cam(void)
 	return (camera);
 }
 
+static void	ft_init_util(t_fdfc *fdf)
+{
+	fdf->angle.projection = ISO_GAMES;
+	fdf->angle.angle = ft_get_angle(fdf);
+	fdf->translation = 1;
+	fdf->play = 0;
+}
+
 void	ft_init_fdf(t_fdfc **fdfp, char *title)
 {
 	t_fdfc	*fdf;
-
 
 	fdf = malloc(sizeof(t_fdfc));
 	if (!fdf)
@@ -49,12 +56,11 @@ void	ft_init_fdf(t_fdfc **fdfp, char *title)
 		ft_error_log("INIT_MAP_DISPLAY");
 	ft_fill_img(&fdf->map_display, 0xFF000000);
 	ft_init_img(fdf, &fdf->background, WIDTH, HEIGHT);
+	if (!fdf->background.img)
+		ft_error_log("INIT_MAP_DISPLAY");
 	ft_fill_img(&fdf->background, 0x00000000);
-	fdf->angle.projection = ISO_GAMES;
-	fdf->angle.angle = ft_get_angle(fdf);
-	fdf->translation = 1;
-	fdf->play = 0;
 	fdf->camera = ft_init_cam();
+	ft_init_util(fdf);
 	*fdfp = fdf;
 	return ;
 }

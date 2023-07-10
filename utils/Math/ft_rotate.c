@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 14:27:23 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 14:32:56 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 18:29:04 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -26,7 +26,7 @@ double	ft_get_angle(t_fdfc *fdf)
 
 void	ft_rotate_x(int *y, int *z, double alpha)
 {
-	int previous_y;
+	int	previous_y;
 
 	previous_y = *y;
 	*y = previous_y * cos(alpha) + *z * sin(alpha);
@@ -35,7 +35,7 @@ void	ft_rotate_x(int *y, int *z, double alpha)
 
 void	ft_rotate_y(int *x, int *z, double beta)
 {
-	int previous_x;
+	int	previous_x;
 
 	previous_x = *x;
 	*x = previous_x * cos(beta) + *z * sin(beta);
@@ -44,8 +44,8 @@ void	ft_rotate_y(int *x, int *z, double beta)
 
 void	ft_rotate_z(int *x, int *y, double gamma)
 {
-	int previous_x;
-	int previous_y;
+	int	previous_x;
+	int	previous_y;
 
 	previous_x = *x;
 	previous_y = *y;

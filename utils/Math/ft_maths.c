@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 14:23:29 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 15:40:01 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 18:27:45 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <ft_maths.h>
@@ -43,7 +43,7 @@ double	ft_distance_2_points(t_point a, t_point b)
 int	ft_random(unsigned char seed)
 {
 	static unsigned char	current;
-	unsigned char tmp;
+	unsigned char			tmp;
 
 	if (seed != 0)
 	{

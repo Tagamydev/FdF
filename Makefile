@@ -6,7 +6,7 @@
 #    By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/24 19:28:25 by samusanc          #+#    #+#              #
-#    Updated: 2023/07/10 17:59:09 by samusanc         ###   ########.fr        #
+#    Updated: 2023/07/10 18:32:49 by samusanc         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,6 +41,7 @@ SRCS	= $(MAIN) \
 		  $(MATH)ft_maths_4_render.c \
 		  \
 		  $(FT_MLX)ft_mlx_funtions.c \
+		  $(FT_MLX)ft_mlx_funtions_utils.c \
 		  \
 		  $(GP)ft_get_point.c \
 		  \

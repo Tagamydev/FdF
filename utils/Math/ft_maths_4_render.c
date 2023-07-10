@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 15:24:51 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 15:53:26 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 18:28:23 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -29,5 +29,6 @@ void	ft_make_maths(t_point *point, t_fdfc *fdf)
 		fdf->angle.projection == CUSTOM)
 		ft_iso(&point->x, &point->y, point->z, fdf);
 	point->x += (WIDTH) / 2 + fdf->camera->x_offset;
-	point->y += (HEIGHT + fdf->map->height * fdf->camera->zoom) / 2 + fdf->camera->y_offset;
+	point->y += (HEIGHT + fdf->map->height * fdf->camera->zoom) \
+	/ 2 + fdf->camera->y_offset;
 }

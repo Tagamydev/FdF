@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 15:41:54 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 18:06:01 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 18:26:21 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -50,7 +50,6 @@ int	ft_key_press(int key, void *param)
 		ft_rotate(key, fdf);
 	if (key == 87)
 		ft_change_proyection(fdf);
-	ft_printf("key:%d\n", key);
 	return (0);
 }
 
