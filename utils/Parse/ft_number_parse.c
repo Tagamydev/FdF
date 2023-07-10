@@ -1,15 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_read_map.c                                      :+:      :+:    :+:   */
+/*   ft_number_parse.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/01 10:32:49 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/09 22:28:05 by samusanc         ###   ########.fr       */
+/*   Created: 2023/07/10 14:12:26 by samusanc          #+#    #+#             */
+/*   Updated: 2023/07/10 14:14:02 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
+
+int	ft_is_digit_base(char c, int base, char *digits)
+{
+	int	i;
+
+	i = 0;
+	while (i < base)
+	{
+		if (digits[i] == ft_toupper(c))
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+int	ft_atoi_base_hex(char *number, int base)
+{
+	int	result;
+
+	result = 0;
+	if (*number == '0' && *(number + 1) == 'x')
+		number += 2;
+	else
+		ft_error_log("COLOR_FORMAT_ERROR_0x");
+	while (ft_is_digit_base(*number, base, BASE_UP) != -1)
+		result = result * base + ft_is_digit_base(*(number++), base, BASE_UP);
+	if (*number && *number != '\n')
+		ft_error_log("COLOR_FORMAT_ERROR_NULL");
+	return (result);
+}
 
 int	ft_atoi_base(char *number, int base)
 {
@@ -42,3 +72,5 @@ int	ft_is_number_or_color(char **numb)
 		ft_atoi_base(*(numb + 1), 16);
 	return (1);
 }
+
+
