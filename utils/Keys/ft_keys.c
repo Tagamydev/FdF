@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 15:41:54 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 15:59:53 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 18:06:01 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -30,78 +30,6 @@ void	ft_change_proyection(t_fdfc *fdf)
 		fdf->camera->gamma = 1.55;
 	}
 	ft_ft_draw(fdf);
-}
-
-int	ft_rotate(int key, t_fdfc *fdf)
-{
-	if (key == 91)	
-		fdf->camera->alpha -= 0.1;
-	else if (key == 84)	
-		fdf->camera->alpha += 0.1;
-	else if (key == 86)
-		fdf->camera->gamma += 0.05;
-	else if (key == 88)
-		fdf->camera->gamma -= 0.05;
-	else if (key == 15)
-	{
-		fdf->camera->alpha = (int)ft_random(fdf->random) / 4;
-		fdf->camera->beta = (int)ft_random(fdf->random)  / 4;
-		fdf->camera->gamma = (int)ft_random(fdf->random) / 4;
-		fdf->camera->x_offset = (int)ft_random(fdf->random) / 4;
-		fdf->camera->y_offset = (int)ft_random(fdf->random) / 4;
-		fdf->camera->y_offset -= (int)ft_random(fdf->random) / 2;
-		fdf->camera->y_offset -= 100;
-		fdf->camera->zoom = (int)(ft_random(fdf->random));
-		fdf->camera->zoom -= (int)((ft_random(fdf->random) - ft_random(fdf->random)));
-	}
-	else if (key == 29)
-	{
-		fdf->camera->zoom = ft_min((WIDTH / ft_get_lenght("W", fdf->map->map) / 2)\
-		, (HEIGHT / ft_get_lenght("H", fdf->map->map) / 2));
-		fdf->camera->x_offset = 0;
-		fdf->camera->y_offset = 0;
-		fdf->camera->alpha = 0;
-		fdf->camera->beta = 0;
-		fdf->camera->gamma = -1.5;
-	}
-	else if (key == 30)
-	{
-		if (fdf->angle.projection == CUSTOM)
-			fdf->angle.angle += 0.05;
-		else
-			fdf->translation += 0.25;
-	}
-	else if (key == 44)
-	{
-		if (fdf->angle.projection == CUSTOM)
-			fdf->angle.angle -= 0.05;
-		else
-			fdf->translation -= 0.25;
-	}
-	else if (key == 69)
-		fdf->camera->zoom++;
-	else if (key == 78)
-		fdf->camera->zoom--;
-	else if (key >= 123 && key <= 126)
-	{
-		if (key == 125)
-		fdf->camera->y_offset += 10;
-		if (key == 126)
-		fdf->camera->y_offset -= 10;
-		if (key == 124)
-		fdf->camera->x_offset += 20;
-		if (key == 123)
-		fdf->camera->x_offset -= 20;
-	}
-	else if (key == 49)
-	{
-		if (fdf->play)
-			fdf->play = 0;
-		else 
-			fdf->play = 1;
-	}
-	ft_ft_draw(fdf);
-	return (0);
 }
 
 int	ft_key_press(int key, void *param)
@@ -138,4 +66,3 @@ void	ft_counter(void *param)
 		ft_ft_draw(fdf);
 	}
 }
-

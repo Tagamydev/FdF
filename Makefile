@@ -6,7 +6,7 @@
 #    By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/24 19:28:25 by samusanc          #+#    #+#              #
-#    Updated: 2023/07/10 15:53:20 by samusanc         ###   ########.fr        #
+#    Updated: 2023/07/10 17:59:09 by samusanc         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,7 @@ SRCS	= $(MAIN) \
 		  $(PARSE)ft_number_parse.c \
 		  $(PARSE)ft_win_title.c \
 		  $(PARSE)ft_map_parse.c \
+		  $(PARSE)ft_map_parse_utils.c \
 		  $(PARSE)ft_map_utils.c \
 		  \
 		  $(MATH)ft_maths.c \
@@ -46,8 +47,11 @@ SRCS	= $(MAIN) \
 		  $(INITS)ft_inits.c \
 		  \
 		  $(RENDER)ft_render.c \
+		  $(RENDER)ft_draw.c \
+		  $(RENDER)ft_line_algorithm.c \
 		  \
 		  $(KEYS)ft_keys.c \
+		  $(KEYS)ft_keyboard.c \
 		  \
 		  utils/Gnl_copy/get_all_doc.c
 

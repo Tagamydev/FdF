@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 15:03:22 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 15:30:22 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 17:43:00 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -15,8 +15,8 @@ int	ft_get_col(t_height *map, int x, int y)
 {
 	t_height	*tmp1;
 	t_width		*tmp2;
-	int	i;
-	int	j;
+	int			i;
+	int			j;
 
 	i = 0;
 	tmp1 = map;
@@ -44,8 +44,8 @@ int	ft_get_z(t_height *map, int x, int y)
 {
 	t_height	*tmp1;
 	t_width		*tmp2;
-	int	i;
-	int	j;
+	int			i;
+	int			j;
 
 	i = 0;
 	tmp1 = map;

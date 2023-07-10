@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 14:17:47 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 14:18:18 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 17:41:03 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -20,15 +20,16 @@ void	ft_print_line_map(t_width *line, int y)
 	tmp = line;
 	while (tmp)
 	{
-		ft_printf("(%d, %d) = number:%d, color:%p\n", x++, y, tmp->z, tmp->color);
+		ft_printf("(%d, %d) = number:%d, color:%p\n", \
+		x++, y, tmp->z, tmp->color);
 		tmp = tmp->next;
 	}
 }
 
 void	ft_print_mapi(t_height *map)
 {
-	t_height *tmp;
-	int	y;
+	t_height	*tmp;
+	int			y;
 
 	y = 0;
 	tmp = map;

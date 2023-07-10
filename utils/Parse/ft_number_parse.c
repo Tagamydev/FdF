@@ -6,7 +6,7 @@
 /*   By: samusanc <samusanc@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/10 14:12:26 by samusanc          #+#    #+#             */
-/*   Updated: 2023/07/10 14:14:02 by samusanc         ###   ########.fr       */
+/*   Updated: 2023/07/10 17:41:14 by samusanc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fdf.h>
@@ -72,5 +72,3 @@ int	ft_is_number_or_color(char **numb)
 		ft_atoi_base(*(numb + 1), 16);
 	return (1);
 }
-
-
